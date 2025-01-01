@@ -12,11 +12,12 @@ boardtest = [[33,2,1],[0,1,5],[1,2,3]]
 
 main :: IO ()
 main = do
-  let n = 5
-  let top_c = [2,3,2,1,4]
-  let bottom_c = [1,2,3,5,2]
-  let left_c = [2,3,2,3,1]
-  let right_c = [2,3,2,1,3]
+  let n = 6
+  let top_c = [0,0,1,0,2,0]
+  let bottom_c = [0,0,4,0,0,1]
+  let left_c = [0,2,0,0,0,2]
+  let right_c = [0,0,5,4,0,0,0]
+  let set_towers = [((3,0),3),((5,1),2),((4,3),1)]
   res <- solveWith @SMT (solver $ debugging noisy z3) $ do
     setLogic "QF_LIA"
     board <- replicateM n $ replicateM n $ var @IntSort
@@ -26,7 +27,14 @@ main = do
 
     -- assert every entry is less then n + 1
     forM_ (concat board) $ assert . (<=? (encode (fromIntegral n :: Integer)))
-    
+   
+    -- assert every already set towers
+    forM_ set_towers $ \tower -> do
+      let x = fst(fst tower)
+      let y = snd(fst tower)
+      let h = snd tower
+      assert $ ((board !! x) !! y) === h
+
     -- assert every entry in a row is unique
     forM_ board $ \row -> do
       forM_ (indexedArray row) $ \(i, vi) -> 
@@ -40,22 +48,21 @@ main = do
           assert $ vi /== vj  
 
     -- assert the top constraints
-    forM_ (indexedArray top_c) $ \(i, vi) ->
+    forM_ (clearConstraints top_c) $ \(i, vi) ->
       assert $ (visibleCount ((transpose board) !! i)) === vi 
 
     -- assert the bottom constraint
-    forM_ (indexedArray bottom_c) $ \(i, vi) ->
+    forM_ (clearConstraints bottom_c) $ \(i, vi) ->
       assert $ (visibleCount ((getBottomToTop board) !! i)) === vi
 
     -- assert the left constraints
-    forM_ (indexedArray left_c) $ \(i, vi) ->
+    forM_ (clearConstraints left_c) $ \(i, vi) ->
       assert $ (visibleCount (board !! i)) === vi
 
     -- assert the right constraints 
-    forM_ (indexedArray right_c) $ \(i, vi) ->
+    forM_ (clearConstraints right_c) $ \(i, vi) ->
       assert $ (visibleCount ((getLeftToRight board) !! i)) === vi
 
-    --assert $ (visibleCount (board !! 1)) === 2
     return board
   print res
 
@@ -76,3 +83,6 @@ getBottomToTop x = map (\a -> reverse a) (transpose x)
 
 getLeftToRight :: [[Expr 'IntSort]] -> [[Expr 'IntSort]]
 getLeftToRight x = map (\a -> reverse a) x
+
+clearConstraints :: [Expr 'IntSort] -> [(Int, Expr 'IntSort)]
+clearConstraints x = filter (\(_,y) -> y/=0) (indexedArray x)
