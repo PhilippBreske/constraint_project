@@ -15,10 +15,15 @@ extra-doc-files:    CHANGELOG.md
 common warnings
     ghc-options: -Wall -XTypeApplications
 
+library 
+  hs-source-dirs: app/Parser
+  exposed-modules: Parser
+  build-depends: base, parsec, split, 
+  default-language: Haskell2010
 
-executable towers
+executable solve
     import:           warnings
     main-is:          Main.hs
-    build-depends:    base ^>=4.17.2.0, hasmtlib>=2.8.0
+    build-depends:    base ^>=4.17.2.0, hasmtlib>=2.8.0, towers
     hs-source-dirs:   app
     default-language: Haskell2010
