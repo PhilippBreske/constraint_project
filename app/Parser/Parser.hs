@@ -20,7 +20,7 @@ getPuzzle s =
     constr = map (\x -> case x of {"" -> 0; x -> read x :: Int }) $ parseWithChar ('/') (head $ parseWithChar ',' $ drop 2 $ info)
     [top, bottom, left, right] = chunksOf size constr
     board = (parseWithChar ',' info) !! 1
-  in print (size, top, bottom, left, right, board, (parseBoard size board))
+  in Puzzle size top bottom left right (parseBoard size board)
 
 parseWithChar :: Char -> String -> [String]
 parseWithChar c s = case (P.parse (splitOn c) "" s) of
