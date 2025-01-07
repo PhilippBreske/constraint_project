@@ -18,7 +18,7 @@ common warnings
 library 
   hs-source-dirs: app/Parser
   exposed-modules: Parser
-  build-depends: base, parsec, split, 
+  build-depends: base, parsec, split, extra 
   default-language: Haskell2010
 
 executable solve

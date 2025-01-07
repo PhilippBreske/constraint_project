@@ -20,6 +20,16 @@
   (major1) == 4 && (major2) <  17 || \
   (major1) == 4 && (major2) == 17 && (minor) <= 2)
 #endif /* MIN_VERSION_base */
+/* package extra-1.8 */
+#ifndef VERSION_extra
+#define VERSION_extra "1.8"
+#endif /* VERSION_extra */
+#ifndef MIN_VERSION_extra
+#define MIN_VERSION_extra(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  8 || \
+  (major1) == 1 && (major2) == 8 && (minor) <= 0)
+#endif /* MIN_VERSION_extra */
 /* package parsec-3.1.16.1 */
 #ifndef VERSION_parsec
 #define VERSION_parsec "3.1.16.1"
